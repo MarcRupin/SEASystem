@@ -1,0 +1,169 @@
+# This program is designed to solve the relative efficiency rate of students in factors including work-life balance,
+# academic standing, and interaction rates.
+
+def main():
+    access_verification()
+    category_verification()
+
+
+# This program will verify if you are allowed by the Developer using a distributed Public Key.
+
+def access_verification():
+    public_key = "CIP2021:mdjvr2024"
+    trial = 3
+    input_access = input(
+        "Please input the public access key provided by the Developer. You have " + str(trial) + " trials left.")
+    print()
+    if input_access != public_key:
+        trial = trial - 1
+        while trial != 0:
+            print()
+            input_access = input("Input the public access key provided by the Developer. You have " + str(trial) +
+                                 " trials left.")
+            trial = int(trial)
+            trial = trial - 1
+    if input_access != public_key and trial == 0:
+        print('Access has been denied. Contact the Developer for the Public Access Key')
+        exit()
+    if input_access == public_key:
+        print("Welcome to the SEA Diagnostic System")
+        print("This is a system made as a final project for Code in Place 2021.")
+
+
+# This function will verify if you have a previous recorded data using a generated tracking key
+
+def category_verification():
+    print()
+    tracking_key_verify = input("If you have a tracking key, type it now. If not, press N to proceed as student.")
+    if tracking_key_verify != "N":
+        print("Your previous record is printed.")
+        print()
+        print(tracking_key_verify.split("-", 2))
+        proceed = str(input("Would you like to proceed?"))
+        if proceed == "YES":
+            student_form()
+        elif proceed != "YES":
+            print()
+            print("Thank you for using SEA Diagnostic System.")
+            pass
+    if tracking_key_verify == "N":
+        student_form()
+
+
+# This is the main function which receives the input of the user.
+
+def student_form():
+    term = terms()
+    if term == "YES":
+        trials = input("This test would check for your weekly academic/non-academic time ratio. Press 1 to continue ")
+        while trials == "1":
+            count_student = 1
+            year = str(input("What year are you taking this evaluation? "))
+            print("Answer the following questions as honest as possible. ")
+            print()
+            print("This includes in-person, online synchronous and asynchronous sessions. ")
+            student_main_hours = float(input("How many hours do you spend in school? (per week) "))
+            print()
+            student_home = float(input("How many hours do you spend for recreational activities? (per week)"))
+            print()
+            student_sleep = float(input("How many hours do you sleep per day?"))
+            print()
+            student_outputs = float(input("In average, how many at-home outputs are you assigned every week? "))
+            print()
+            student_outputs_hours = float(input("How many hours do you spend in finishing one output? "))
+            print()
+            print("Using the scale: A/A+/A- = 100, B+/B/B- = 90, C+/C+/C- = 75, and F = 60 and below")
+            student_academic_grade: float = float(input("Write your expected numerical grade."))
+            print("This marks the end of the questions. ")
+
+            # The following two variables are the main focus of the program: Academic Efficiency and Study-Life Balance
+
+            efficiency = efficiency_student(student_main_hours, student_outputs, student_outputs_hours,
+                                            student_academic_grade)
+            balance = student_life(student_home, student_sleep, efficiency_student(student_main_hours, student_outputs,
+                                                                                   student_outputs_hours,
+                                                                                   student_academic_grade))
+            # These lines will print the result.
+            print("Your academic hour ratio per week is " + str(efficiency) + "%.")
+            print("Your academic to nonacademic activity hour ratio is " + str(balance) + "%" + ". ")
+
+            # These functions will verify restarting the function studentform() for other data
+            if count_student != 0:
+                compare = input("YES or NO: do you want to repeat the process for a different student? ")
+                if compare == "YES":
+                    count_student = count_student + 1
+                    trials = "1"
+                elif compare != "YES":
+                    trials = "0"
+            # Printing new tracking key
+            if trials == "0" and efficiency != 0:
+                track_verify = str(input("Do you have a tracking key? If yes, type again for verification. If not, "
+                                         "press N."))
+                if track_verify != "N":
+                    print(track_verify.split("-", 2))
+                    print()
+                    print("Total analyzed: " + str(count_student))
+                    # noinspection PyTypeChecker
+                    tracking_key = str(year) + "-" + str(count_student) + "-" + str(int(efficiency)) + "-" + \
+                        str(int(balance))
+                    print()
+                    print("The new tracking key provided will be used in comparison of future data to your old data.")
+                    print()
+                    print("Your new tracking key is: " + str(tracking_key) + "-" + str(track_verify))
+                    print()
+                    print("To compare data, the tracking keys are arranged such that it follows the year, student "
+                          "count, Academic Ratio, and Academic/Non-Academic Ratio.")
+                    print()
+                    print("Best values are: AR: nearest to 79%, AR/NR: nearest to 65%")
+                    pass
+                if track_verify == "N":
+                    print()
+                    print("Best values are: AR: nearest to 79%, AR/NR: nearest to 65%")
+                    print()
+                    print("Total analyzed: " + str(count_student))
+                    # noinspection PyTypeChecker
+                    print()
+                    print("The tracking key provided will be used in comparison of future data to your old data.")
+                    print()
+                    print("Your tracking key is: " + str(track_verify))
+                    print()
+                    print("Thank you for using SEA Diagnostic Systems")
+                    pass
+
+    if term == "NO":
+        print("The program will end now. Thank you for accessing SEA Diagnostic System.")
+
+
+# This function reminds the user of data privacy.
+
+def terms():
+    print()
+    print("Any information would only be used for analysis in this program and will not be shared to any third-party.")
+    print()
+    print("In the interest of data processing safety, your data is only saved as long as the program is open.")
+    print()
+    print("Answer only using YES or NO.")
+    print()
+    term = input("This is a reminder that the data you would provide in this analytical tool will kept in private.")
+    return term
+
+
+# This function solve for AR or academic-time ratio. A value of 79% is best.
+
+def efficiency_student(student_main_hours, student_outputs, student_outputs_hours, student_academic_grade):
+    student_academic_hour_ratio = ((student_main_hours + (student_outputs * student_outputs_hours)) / 168) * 100
+    student_academic_percentage = student_academic_grade - student_academic_hour_ratio
+    return student_academic_percentage
+
+# This function solve for AR/NR or the Efficiency/ Equal Student-Life Percentage. A value of 65% is best.
+
+
+def student_life(student_home, student_sleep, student_academic_percentage) -> object:
+    student_nonacademic = ((student_home + (student_sleep * 7)) / 168) * 100
+    student_efficiency_balance = ((student_nonacademic / student_academic_percentage)
+                                  * 100)
+    return student_efficiency_balance
+
+
+if __name__ == '__main__':
+    main()
